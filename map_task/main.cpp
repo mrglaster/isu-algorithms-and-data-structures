@@ -16,7 +16,7 @@ void memory_allocation(int power){
     }
     auto tEnd = std::chrono::high_resolution_clock::now();
     experimentalMap.clear();
-    std::cout << (tEnd - tStart).count() / 1000 << " " << 2 * sizeof(int) * maxElements;
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(tEnd - tStart).count() << " " << 2 * sizeof(int) * maxElements / 1024.0 << " ";
 }
 
 /**The main function*/
