@@ -15,11 +15,3 @@
 * Тип ключа и элементов int
 
 * Код должен быть залит в гит
-
-
-
-
-
-![alt text](https://github.com/mrglaster/cpp-algorithms-and-data-structures/blob/main/map_task/readme_images/cpp_graph.png)
-
-![alt text](https://github.com/mrglaster/cpp-algorithms-and-data-structures/blob/main/map_task/readme_images/python_graph.png)
