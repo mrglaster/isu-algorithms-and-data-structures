@@ -26,7 +26,7 @@ template <typename T> class NDArray {
 
 
         /**Creates multidimensional array filled with preset value*/
-        NDArray(vector<int>* sh, T val = INT_MAX) { //создание многомерного массива заполненого каким-либо значением
+        NDArray(vector<int>* sh, T val = INT_MAX) {
             int prod = 1;
             for (auto value : *sh) {
                 prod *= value;
@@ -57,10 +57,10 @@ template <typename T> class NDArray {
 
         /***/
         T& operator() (int i, int j) {
-        assert(i < shape[0]);
-        assert(j < shape[1]);
-        return vec[i * shape[1] + j];
-    };
+            assert(i < shape[0]);
+            assert(j < shape[1]);
+            return vec[i * shape[1] + j];
+        };
 
         /**Assignment operator overload*/
         NDArray<T>& operator = (const NDArray<T>& v) {
@@ -71,10 +71,10 @@ template <typename T> class NDArray {
             for (int i = 0; i < size; i++)
                 vec.push_back(v.vec[i]);
             return *this;
-    };
+        };
 
         /**Element-wise adding*/
-        NDArray<T>& operator += (const NDArray<T>& v) {//поэлементное сложение
+        NDArray<T>& operator += (const NDArray<T>& v) {
             assert(shape == v.shape);
             for (int i = 0; i < size; i++) vec[i] += v.vec[i];
             return *this;
@@ -132,7 +132,7 @@ template <typename T> class NDArray {
         }
 
         /**Element-wise substraction*/
-        NDArray<T>& operator -= (const NDArray<T>& v) {//поэлементное вычитание
+        NDArray<T>& operator -= (const NDArray<T>& v) {
             return (*this += (-v));
         }
 
@@ -153,7 +153,7 @@ template <typename T> class NDArray {
         }
 
         /**Element-wise divide*/
-        NDArray<T>& operator /= (const NDArray<T>& v) {//поэлементное деление
+        NDArray<T>& operator /= (const NDArray<T>& v) {
             assert(shape == v.shape);
             for (int i = 0; i < size; i++)
                 vec[i] /= v.vec[i];
@@ -166,7 +166,7 @@ template <typename T> class NDArray {
         }
 
 
-        NDArray<T>& operator /= (T n) {//деление на число всех элементов
+        NDArray<T>& operator /= (T n) {
             for (int i = 0; i < size; i++)
                 vec[i] /= n;
             return *this;
