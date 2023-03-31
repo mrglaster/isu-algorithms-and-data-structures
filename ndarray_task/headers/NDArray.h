@@ -11,72 +11,73 @@ template <typename T> class NDArray {
 
     /**Private fields initialization*/
     private:
-        vector<int> shape;
-        int size;
-        vector<T> vec;
+       
+        vector<int> shapes;
+        int dimsAmount;
+        vector<T> data;
 
     public:
 
         /**Creates single-dimensional array filled with preset value*/
         NDArray(int sh, T val = INT_MAX) {
-            shape.push_back(sh);
-            size = sh;
-            for (int i = 0; i < size; i++) vec.push_back(val);
+            shapes.push_back(sh);
+            dimsAmount = sh;
+            for (int i = 0; i < dimsAmount; i++) data.push_back(val);
         };
 
 
         /**Creates multidimensional array filled with preset value*/
-        NDArray(vector<int>* sh, T val = INT_MAX) {
+        NDArray(vector<int>* sh, T val = INT_MAX) { 
             int prod = 1;
             for (auto value : *sh) {
                 prod *= value;
-                shape.push_back(value);
+                shapes.push_back(value);
             }
-            size = prod;
-            for (int i = 0; i < size; i++) vec.push_back(val);
+            dimsAmount = prod;
+            for (int i = 0; i < dimsAmount; i++) data.push_back(val);
         };
 
         /**Fills created NDArray with random values*/
         void fillRandom() {
             srand(time(NULL));
-            vec.clear();
-            for (int i = 0; i < size; i++) {
+            data.clear();
+            for (int i = 0; i < dimsAmount; i++) {
                 T num = rand();
                 int sign = rand() % 2;
                 if (sign == 0) num *= -1;
-                vec.push_back(num);
+                data.push_back(num);
             }
         }
 
         /**Lets us to get elements by id*/
         T& operator() (int i) {
-            assert((i < size));
-            return vec[i];
+            assert((i < dimsAmount));
+            return data[i];
         };
 
 
         /***/
         T& operator() (int i, int j) {
-            assert(i < shape[0]);
-            assert(j < shape[1]);
-            return vec[i * shape[1] + j];
+            assert(i < shapes[0]);
+            assert(j < shapes[1]);
+            return data[i * shapes[1] + j];
         };
 
         /**Assignment operator overload*/
         NDArray<T>& operator = (const NDArray<T>& v) {
-            vec.clear();
-            size = v.size;
-            shape = v.shape;
-            if (v.vec.empty()) return *this;
-            for (int i = 0; i < size; i++)
-                vec.push_back(v.vec[i]);
+            data.clear();
+            dimsAmount = v.dimsAmount;
+            shapes = v.shapes;
+            if (v.data.empty()) return *this;
+            for (int i = 0; i < dimsAmount; i++)
+                data.push_back(v.data[i]);
             return *this;
-        };
+    };
 
         /**Element-wise adding*/
         NDArray<T>& operator += (const NDArray<T>& v) {
-            assert(shape == v.shape);
-            for (int i = 0; i < size; i++) vec[i] += v.vec[i];
+            assert(shapes == v.shapes);
+            for (int i = 0; i < dimsAmount; i++) data[i] += v.data[i];
             return *this;
         }
 
@@ -88,8 +89,8 @@ template <typename T> class NDArray {
 
         /**Add some value to all the elements*/
         NDArray<T>& operator += (T n) {
-            for (int i = 0; i < size; i++)
-                vec[i] += n;
+            for (int i = 0; i < dimsAmount; i++)
+                data[i] += n;
             return *this;
         }
 
@@ -101,9 +102,9 @@ template <typename T> class NDArray {
 
         /**Element-wise multiply*/
         NDArray<T>& operator *= (const NDArray<T>& v) {
-            assert(shape == v.shape);
-            for (int i = 0; i < size; i++)
-                vec[i] *= v.vec[i];
+            assert(shapes == v.shapes);
+            for (int i = 0; i < dimsAmount; i++)
+                data[i] *= v.data[i];
             return *this;
     }
 
@@ -114,8 +115,8 @@ template <typename T> class NDArray {
 
         /**Multiply all the elements by a number*/
         NDArray<T>& operator *= (T n) {
-            for (int i = 0; i < size; i++)
-                vec[i] *= n;
+            for (int i = 0; i < dimsAmount; i++)
+                data[i] *= n;
             return *this;
         }
 
@@ -154,9 +155,9 @@ template <typename T> class NDArray {
 
         /**Element-wise divide*/
         NDArray<T>& operator /= (const NDArray<T>& v) {
-            assert(shape == v.shape);
-            for (int i = 0; i < size; i++)
-                vec[i] /= v.vec[i];
+            assert(shapes == v.shapes);
+            for (int i = 0; i < dimsAmount; i++)
+                data[i] /= v.data[i];
             return *this;
         }
 
@@ -164,11 +165,11 @@ template <typename T> class NDArray {
             NDArray<T> res(*this);
             return res /= v;
         }
-
-
-        NDArray<T>& operator /= (T n) {
-            for (int i = 0; i < size; i++)
-                vec[i] /= n;
+	
+		/**Divide all the elements by a number*/
+        NDArray<T>& operator /= (T n) {//деление на число всех элементов
+            for (int i = 0; i < dimsAmount; i++)
+                data[i] /= n;
             return *this;
         }
 
@@ -178,38 +179,38 @@ template <typename T> class NDArray {
         }
 
         /**Replaces all the values with an other value*/
-        NDArray<T>& filling(T val) {
-            vec.clear();
-            for (int i = 0; i < size; i++)
-                vec.push_back(val);
+        NDArray<T>& replaceAllValues(T val) {
+            data.clear();
+            for (int i = 0; i < dimsAmount; i++)
+                data.push_back(val);
             return *this;
         }
 
         /**Transposes NDArray*/
         NDArray<T>& transpose() {
-            vector<int> s{ shape[1], shape[0] };
+            vector<int> s{ shapes[1], shapes[0] };
             NDArray<T> res(&s, 0);
-            for (int i = 0; i < shape[0]; i++) {
-                for (int j = 0; j < shape[1]; j++) {
+            for (int i = 0; i < shapes[0]; i++) {
+                for (int j = 0; j < shapes[1]; j++) {
                     res(j, i) = (*this)(i, j);
                 }
             }
             *this = res;
             return *this;
-    }
+        }
 
         /**Matrix multiplying*/
         NDArray<T> matMul(NDArray<T>& v1) {
-            assert(shape[1] == v1.shape[0]);
-            vector<int> s{ shape[0], v1.shape[1] };
+            assert(shapes[1] == v1.shapes[0]);
+            vector<int> s{ shapes[0], v1.shapes[1] };
             NDArray<T> res(&s, 0);
             NDArray<T> v(1);
             v = v1;
             v.transpose();
-            for (int k = 0; k < shape[0]; k++) {
-                for (int i = 0; i < v.shape[0]; i++) {
+            for (int k = 0; k < shapes[0]; k++) {
+                for (int i = 0; i < v.shapes[0]; i++) {
                     int n = 0;
-                    for (int j = 0; j < shape[1]; j++) {
+                    for (int j = 0; j < shapes[1]; j++) {
                         n += (*this)(k, j) * v(i, j);
                     }
                     res(k, i) = n;
@@ -220,72 +221,73 @@ template <typename T> class NDArray {
 
         /**Find minimal value*/
         T min(T n = -1) {
-            assert(n < shape[0]);
-            T imin = vec[0];
+            assert(n < shapes[0]);
+            T minVal = data[0];
             if (n == -1) {
-                for (auto val : vec)
-                    if (val < imin)
-                        imin = val;
+                for (auto val : data)
+                    if (val < minVal)
+                        minVal = val;
             } else {
-                imin = vec[n * shape[1]];
-                for (int i = n * shape[1]; i < n * shape[1] + shape[1]; i++) {
-                    if (vec[i] < imin)
-                        imin = vec[i];
+                minVal = data[n * shapes[1]];
+                for (int i = n * shapes[1]; i < n * shapes[1] + shapes[1]; i++) {
+                    if (data[i] < minVal)
+                        minVal = data[i];
                 }
             }
-            return imin;
+            return minVal;
         }
 
         /**Find maximal value*/
         T max(T n = -1) {
-            assert(n < shape[0]);
-            T imax = vec[0];
+            assert(n < shapes[0]);
+            T maxVal = data[0];
             if (n == -1) {
-                for (auto val : vec)
-                    if (val > imax)
-                        imax = val;
+                for (auto val : data)
+                    if (val > maxVal)
+                        maxVal = val;
             } else {
-                imax = vec[n * shape[1]];
-                for (int i = n * shape[1]; i < n * shape[1] + shape[1]; i++) {
-                    if (vec[i] > imax)
-                        imax = vec[i];
+                maxVal = data[n * shapes[1]];
+                for (int i = n * shapes[1]; i < n * shapes[1] + shapes[1]; i++) {
+                    if (data[i] > maxVal)
+                        maxVal = data[i];
                 }
             }
-            return imax;
+            return maxVal;
         }
 
         /**Find the mean value*/
         T mean(T n = -1) {
-            assert(n < shape[0]);
-            T imean = 0;
+            assert(n < shapes[0]);
+            T meanVal = 0;
             if (n == -1) {
-                for (auto val : vec){
-                    imean += val;
+                for (auto val : data){
+                    meanVal += val;
                 }
-                imean = imean / size;
+                meanVal = meanVal / dimsAmount;
             } else {
-                for (int i = n * shape[1]; i < n * shape[1] + shape[1]; i++) {
-                    imean += vec[i];
+                for (int i = n * shapes[1]; i < n * shapes[1] + shapes[1]; i++) {
+                    meanVal += data[i];
                 }
-                imean = imean / shape[1];
+                meanVal = meanVal / shapes[1];
             }
-            return imean;
+            return meanVal;
         }
 
         /**Prints NDArray into the console*/
         void ndaPrint() {
-            if (shape.size() == 1) {
-                if (!vec.empty())
-                    for (int i = 0; i < size; i++)
-                        std::cout << vec[i] << " ";
+            if (shapes.dimsAmount() == 1) {
+                if (!data.empty())
+                    for (int i = 0; i < dimsAmount; i++)
+                        std::cout << data[i] << " ";
                 std::cout << std::endl;
             } else {
-                for (int i = 0; i < shape[0]; i++) {
-                    for (int j = 0; j < shape[1]; j++)
+                for (int i = 0; i < shapes[0]; i++) {
+                    for (int j = 0; j < shapes[1]; j++)
                         std::cout << (*this)(i, j) << " ";
                     std::cout << std::endl;
                 }
             }
-        };
+       };
+
 };
 #endif // NDARRAY_H_INCLUDED
