@@ -1,0 +1,1 @@
+{"name": "A", "value1": 1.5, "value2": 2.5, "nodes": [{"name": "B", "value1": 2.5, "value2": 3.5, "nodes": [{"name": "D", "value1": 4.5, "value2": 5.5, "nodes": [{"name": "E", "value1": 5.5, "value2": 6.5, "nodes": []}]}]}, {"name": "C", "value1": 3.5, "value2": 4.5, "nodes": []}]}
